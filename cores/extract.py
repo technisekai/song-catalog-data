@@ -70,11 +70,13 @@ def get_metadata_from_youtube(
             part="snippet,statistics,contentDetails",
             id=video_id
         ).execute()
-        results.append({
-            "video_id": video_id,
-            "channel_id": video_response['items'][0]['snippet']['channelId'],
-            "song_title": video_response['items'][0]['snippet']['title'],
-            "artist": video_response['items'][0]['snippet']['channelTitle'],
-            "video_title": video_response['items'][0]['snippet']['title']
-        })
+        snippet = video_response['items'][0].get('snippet', None)
+        if snippet:
+            results.append({
+                "video_id": video_id,
+                "channel_id": snippet.get('channelId', None),
+                "song_title": snippet.get('title', None),
+                "artist": snippet.get('channelTitle', None),
+                "video_title": snippet.get('title', None)
+            })
     return results
