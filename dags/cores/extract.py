@@ -80,3 +80,32 @@ def get_metadata_from_youtube(
                 "video_title": snippet.get('title', None)
             })
     return results
+
+def get_data_from_gsheet(
+        url: str,
+        api_key: str,
+        sheet_name: str,
+        start_cell: str,
+        end_cell: str
+):
+    """
+    Get songs catalog from google sheet
+    Params:
+        - url: public gsheet url. example: https://sheets.googleapis.com/v4/spreadsheets/1OkDM1miCXh48M23n_C4AOGPl_DW1QtIXFSdHW6Grzxg
+        - api_key: google api key
+        - sheet_name: sheet name want to scrapping
+        - start_cell: start cell want to scrap. example: A1
+        - end_cell: end cell want to scrap. example: C10
+    Return:
+        list of metadata - 
+        [{"header_1": ..., "header_2": ..., "header_n": ...}, ...]
+    """
+    gsheet_url = f"{url}/values/{sheet_name}!{start_cell}:{end_cell}?key={api_key}"
+    response = requests.get(gsheet_url)
+    if response.status_code == 200:
+        results = []
+        rows = response.json().get("values", [])
+        columns = [x.replace(' ', '_').lower().strip() for x in rows[0]]
+        for row in rows[1:]:
+            results.append(dict(zip(columns, row)))
+    return results

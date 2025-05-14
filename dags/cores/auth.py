@@ -1,5 +1,16 @@
 import requests
+import clickhouse_connect
 from googleapiclient.discovery import build
+
+def clickhouse_conn(host: str, port: int, username: str, password: str, database: str = 'default'):
+    conn = clickhouse_connect.get_client(
+        host=host, 
+        username=username, 
+        password=password, 
+        port=port,
+        database=database
+    )
+    return conn
 
 def spotify_auth(auth_url: str, spotify_client_id: str, spotify_client_secret: str) -> dict:
     """
